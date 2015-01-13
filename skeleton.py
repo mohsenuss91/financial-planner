@@ -9,6 +9,7 @@ Richard Lu
 import pandas
 import csv
 import sys
+import datetime
 from PyQt4 import QtGui, QtCore
 from operator import itemgetter
 
@@ -37,6 +38,31 @@ class FinanceTool(QtGui.QMainWindow):
 
 	def initUI(self):
 
+		self.pdateText = QtGui.QLineEdit(self)
+		self.pdateText.move(50, 50)
+		self.pdateText.setText(QtCore.QDate.currentDate().toString("MM/dd/yyyy"))
+
+		self.pdate = QtGui.QPushButton("Date", self)
+		self.pdate.move(150, 50)
+		self.pdate.clicked.connect(self.inputRange)
+
+		self.amount = QtGui.QLineEdit(self)
+		self.amount.move(300, 50)
+
+		self.type = QtGui.QComboBox(self)
+		self.type.setSizeAdjustPolicy(0)
+		self.type.addItem("Giving")
+		self.type.addItem("Food")
+		self.type.addItem("Eating Out")
+		self.type.addItem("Maintenance")
+		self.type.addItem("Leisure")
+		self.type.move(400, 50)
+
+		self.save = QtGui.QPushButton("Save", self)
+		self.save.move(550, 50)
+		self.save.clicked.connect(self.Save)
+
+		# second row
 		self.startText = QtGui.QLineEdit(self)
 		self.startText.move(50, 100)
 
@@ -45,34 +71,42 @@ class FinanceTool(QtGui.QMainWindow):
 		self.start.clicked.connect(self.inputRange)
 
 		self.endText = QtGui.QLineEdit(self)
-		self.endText.move(350, 100)
+		self.endText.move(300, 100)
 
 		self.end = QtGui.QPushButton("End Date", self)
-		self.end.move(450, 100)
+		self.end.move(400, 100)
 		self.end.clicked.connect(self.inputRange)
 
-		self.run = QtGui.QPushButton("Run", self)
-		self.run.move(650, 100)
-		self.run.clicked.connect(self.Run)
+		self.run = QtGui.QPushButton("Analyze", self)
+		self.run.move(550, 100)
+		self.run.clicked.connect(self.Analyze)
 
-		self.setGeometry(300, 170, 800, 400)
+		self.setGeometry(300, 170, 700, 400)
 		self.setWindowTitle("Personal Finance Tool")
 		self.show()
 
 	def inputRange(self):
 
 		self.check = self.sender()
-		self.popup = Calendar(self.check, self.startText, self.endText)
+		self.popup = Calendar(self.check, self.pdateText, self.startText, self.endText)
 
-	def Run(self):
+	def Save(self):
+		# save data to csv 
+		# str(.currentText())
+		return
+
+	def Analyze(self):
+		# general summary statistics here
+		# add a check if end date is after start date
 		return  
 
 class Calendar(QtGui.QWidget):
 
-	def __init__(self, check, startText, endText):
+	def __init__(self, check, pdate, startText, endText):
 
 		super(Calendar, self).__init__()
 		self.check = check
+		self.pdateText = pdate
 		self.startText = startText
 		self.endText = endText
 		self.initUI()
@@ -92,8 +126,10 @@ class Calendar(QtGui.QWidget):
 		self.date = self.calendar.selectedDate()
 		if self.check.text() == "Start Date":
 			self.startText.setText(self.date.toString("MM/dd/yyyy"))
-		else:
+		elif self.check.text() == "End Date":
 			self.endText.setText(self.date.toString("MM/dd/yyyy"))
+		else: 
+			self.pdateText.setText(self.date.toString("MM/dd/yyyy"))
 
 		self.close()
 
