@@ -12,9 +12,6 @@ import sys
 from PyQt4 import QtGui, QtCore
 from operator import itemgetter
 
-global startDate
-global endDate
-
 class FinanceTool(QtGui.QMainWindow):
 
 	"""should pull and store previous data here"""
@@ -40,31 +37,44 @@ class FinanceTool(QtGui.QMainWindow):
 
 	def initUI(self):
 
+		self.startText = QtGui.QLineEdit(self)
+		self.startText.move(50, 100)
+
 		self.start = QtGui.QPushButton("Start Date", self)
-		self.start.move(100, 100)
+		self.start.move(150, 100)
 		self.start.clicked.connect(self.inputRange)
 
+		self.endText = QtGui.QLineEdit(self)
+		self.endText.move(350, 100)
+
 		self.end = QtGui.QPushButton("End Date", self)
-		self.end.move(100, 300)
+		self.end.move(450, 100)
 		self.end.clicked.connect(self.inputRange)
 
-		self.setGeometry(300, 170, 700, 400)
+		self.run = QtGui.QPushButton("Run", self)
+		self.run.move(650, 100)
+		self.run.clicked.connect(self.Run)
+
+		self.setGeometry(300, 170, 800, 400)
 		self.setWindowTitle("Personal Finance Tool")
 		self.show()
 
 	def inputRange(self):
 
 		self.check = self.sender()
-		self.popup = Calendar(self.check)
+		self.popup = Calendar(self.check, self.startText, self.endText)
 
-		# need to figure out how to extract the startDate
+	def Run(self):
+		return  
 
 class Calendar(QtGui.QWidget):
 
-	def __init__(self, check):
+	def __init__(self, check, startText, endText):
 
 		super(Calendar, self).__init__()
 		self.check = check
+		self.startText = startText
+		self.endText = endText
 		self.initUI()
 
 	def initUI(self):
@@ -81,14 +91,11 @@ class Calendar(QtGui.QWidget):
 	def saveDate(self):
 		self.date = self.calendar.selectedDate()
 		if self.check.text() == "Start Date":
-			startDate = self.date
+			self.startText.setText(self.date.toString("MM/dd/yyyy"))
 		else:
-			endDate = self.date
+			self.endText.setText(self.date.toString("MM/dd/yyyy"))
 
-		# need to put this date into a box 
-		QtCore.QCoreApplication.instance().quit()
-
-
+		self.close()
 
 
 # runs the script
