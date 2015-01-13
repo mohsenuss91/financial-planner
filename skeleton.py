@@ -12,9 +12,8 @@ import sys
 from PyQt4 import QtGui, QtCore
 from operator import itemgetter
 
-
-
-
+global startDate
+global endDate
 
 class FinanceTool(QtGui.QMainWindow):
 
@@ -60,7 +59,7 @@ class FinanceTool(QtGui.QMainWindow):
 
 		# need to figure out how to extract the startDate
 
-class Calendar(QtGui.QMainWindow):
+class Calendar(QtGui.QWidget):
 
 	def __init__(self, check):
 
@@ -72,20 +71,20 @@ class Calendar(QtGui.QMainWindow):
 
 		self.calendar = QtGui.QCalendarWidget(self)
 		self.calendar.setGridVisible(True)
+		self.calendar.move(20, 20)
 		self.calendar.clicked[QtCore.QDate].connect(self.saveDate)
 
-		self.setGeometry(300, 300, 300, 300)
+		self.setGeometry(400, 300, 500, 220)
 		self.setWindowTitle("Select a Date")
 		self.show()
 
 	def saveDate(self):
 		self.date = self.calendar.selectedDate()
 		if self.check.text() == "Start Date":
-			self.startDate = self.date
+			startDate = self.date
 		else:
-			self.endDate = self.date
+			endDate = self.date
 
-		print self.startDate
 		# need to put this date into a box 
 		QtCore.QCoreApplication.instance().quit()
 
