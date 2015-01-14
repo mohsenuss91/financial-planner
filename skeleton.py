@@ -10,6 +10,7 @@ import pandas
 import csv
 import sys
 import datetime
+import os
 from PyQt4 import QtGui, QtCore
 from operator import itemgetter
 
@@ -23,18 +24,6 @@ class FinanceTool(QtGui.QMainWindow):
 		super(FinanceTool, self).__init__()
 
 		self.initUI()
-
-		# # reads in data
-		# self.aList = []
-		# f = open("/////.csv", "rb")
-		# reader = csv.reader(f)
-		# for row in reader:
-		# 	self.aList.append(row)
-		# f.close()
-
-
-		# # to sort data
-		# this = sorted(aList, key=itemgetter(0, 2))
 
 	def initUI(self):
 
@@ -52,9 +41,9 @@ class FinanceTool(QtGui.QMainWindow):
 		self.type = QtGui.QComboBox(self)
 		self.type.setSizeAdjustPolicy(0)
 		self.type.addItem("Giving")
-		self.type.addItem("Food")
+		self.type.addItem("Groceries")
 		self.type.addItem("Eating Out")
-		self.type.addItem("Maintenance")
+		self.type.addItem("Medical")
 		self.type.addItem("Leisure")
 		self.type.move(400, 50)
 
@@ -93,7 +82,42 @@ class FinanceTool(QtGui.QMainWindow):
 	def Save(self):
 		# save data to csv 
 		# str(.currentText())
-		return
+		if not os.path.exists("Monthly Reports"):
+			os.mkdir("Monthly Reports")
+
+		currentCSV = str(QtCore.QDate.currentDate().toString("MM-yyyy"))
+
+		# reads in data
+		self.paymentsList = []
+		try:
+			f = open("Monthly Reports/%s.csv" % currentCSV, "rb")
+		except:
+			f = open("Monthly Reports/%s.csv" % currentCSV, "wb")
+			tempWriter = csv.writer(f)
+			tempWriter.writerow(["Date", "Amount", "Type"])
+			f.close()
+			f = open("Monthly Reports/%s.csv" % currentCSV, "rb")
+		reader = csv.reader(f)
+		for row in reader:
+			self.paymentsList.append(row)
+		f.close()
+
+		Date = self.pdateText.text()
+		Amount = self.amount.text()
+		Type = self.type.currentText()
+
+		LineToWrite = [Date, Amount, Type]
+
+		self.paymentsList.append(LineToWrite)
+		self.newPaymentsList = [self.paymentsList[0]] + sorted(self.paymentsList[1:], key=itemgetter(0, 2))
+	
+		f = open("Monthly Reports/%s.csv" % currentCSV, "wb")
+		writer = csv.writer(f)
+		for row in self.newPaymentsList:
+			writer.writerow(row)
+		f.close()
+
+		self.amount.setText("")
 
 	def Analyze(self):
 		# general summary statistics here
